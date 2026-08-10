@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Aluno — Dr. Marco Maggi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:    #0D1B35;
+            --navy2:   #112040;
+            --navy3:   #16274D;
+            --navy4:   #1C2F58;
+            --gold:    #C9A84C;
+            --gold-lt: #E2C97E;
+            --gold-dk: #9A7A2E;
+            --white:   #FFFFFF;
+            --off:     #D8D4CC;
+            --silver:  #7A8499;
+            --border:  rgba(201,168,76,.18);
+            --ft: 'Playfair Display', Georgia, serif;
+            --fb: 'Lato', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--navy);
+            color: var(--off);
+            font-family: var(--fb);
+            font-weight: 300;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAV ── */
+        nav {
+            background: var(--navy);
+            border-bottom: 1px solid var(--border);
+            padding: 0 clamp(1.5rem,5vw,3.5rem);
+            height: 68px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo {
+            font-family: var(--ft); font-size: 1.2rem; font-weight: 700;
+            color: var(--white); text-decoration: none;
+        }
+        .nav-logo span { color: var(--gold); }
+
+        .nav-links { display: flex; align-items: center; gap: 2.2rem; list-style: none; }
+        .nav-links a {
+            font-size: .85rem; font-weight: 400; color: var(--off);
+            text-decoration: none; letter-spacing: .04em; transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+
+        .nav-badge {
+            background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.3);
+            color: #2ECC71; font-size: .72rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            padding: .35rem .9rem; border-radius: 2rem;
+            display: flex; align-items: center; gap: .45rem;
+        }
+        .nav-badge::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: #2ECC71; box-shadow: 0 0 6px #2ECC71;
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* ── HERO ── */
+        .hero {
+            padding: clamp(3rem,7vw,5rem) clamp(1.5rem,5vw,3.5rem) clamp(2rem,5vw,3.5rem);
+            border-bottom: 1px solid var(--border);
+            position: relative; overflow: hidden;
+        }
+        .hero::after {
+            content: ''; position: absolute; right: -100px; top: -100px;
+            width: 500px; height: 500px;
+            background: radial-gradient(ellipse, rgba(201,168,76,.07) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .hero-eye {
+            font-size: .7rem; font-weight: 700; letter-spacing: .22em;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+        }
+        .hero-title {
+            font-family: var(--ft); font-size: clamp(2rem,5vw,3.2rem);
+            font-weight: 700; line-height: 1.15; color: var(--white); margin-bottom: .5rem;
+        }
+        .hero-title em { color: var(--gold); font-style: italic; }
+        .hero-sub { font-size: .9rem; color: var(--silver); line-height: 1.7; max-width: 560px; }
+
+        /* ── PAGE GRID ── */
+        .page-grid {
+            display: grid; grid-template-columns: 1fr 300px;
+            max-width: 1280px; margin: 0 auto;
+        }
+        .main-col {
+            padding: clamp(2rem,4vw,3rem) clamp(1.5rem,4vw,3.5rem);
+            border-right: 1px solid var(--border);
+        }
+        .side-col { padding: clamp(2rem,4vw,3rem) clamp(1.2rem,3vw,2rem); }
+
+        /* ── SEC HEADING ── */
+        .sec-heading {
+            display: flex; align-items: center; gap: .8rem; margin-bottom: 1.6rem;
+        }
+        .sec-heading::after { content:''; flex:1; height:1px; background:var(--border); }
+        .sec-num {
+            font-family: var(--ft); font-size: 3rem; font-weight: 800;
+            color: rgba(201,168,76,.2); line-height: 1; min-width: 3rem;
+        }
+        .sec-text {
+            font-family: var(--ft); font-size: clamp(1.1rem,2.5vw,1.5rem);
+            font-weight: 600; color: var(--white);
+        }
+        .sec-text span { color: var(--gold); }
+
+        /* ── EBOOK ── */
+        .ebook-block { margin-bottom: 3.5rem; }
+        .ebook-card {
+            background: var(--navy2); border: 1px solid var(--border);
+            display: grid; grid-template-columns: 180px 1fr; overflow: hidden;
+            transition: border-color .3s;
+        }
+        .ebook-card:hover { border-color: rgba(201,168,76,.5); }
+
+        .ebook-visual {
+            background: linear-gradient(160deg,var(--navy3),var(--navy4));
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 2.5rem 1.5rem; gap: 1rem;
+            border-right: 1px solid var(--border); position: relative; overflow: hidden;
+        }
+        .ebook-visual::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse, rgba(201,168,76,.08), transparent 70%);
+        }
+        .ebook-visual svg { color: var(--gold); opacity: .85; position: relative; z-index: 1; }
+        .ebook-visual-lbl {
+            font-size: .6rem; font-weight: 700; letter-spacing: .2em;
+            text-transform: uppercase; color: var(--silver);
+            text-align: center; position: relative; z-index: 1;
+        }
+
+        .ebook-cover-img {
+            width: 120px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: center 15%;
+            border-radius: 4px;
+            box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ebook-info {
+            padding: 2rem 2.2rem;
+            display: flex; flex-direction: column; justify-content: space-between; gap: 1.4rem;
+        }
+        .ebook-tag {
+            font-size: .65rem; font-weight: 700; letter-spacing: .18em;
+            text-transform: uppercase; color: var(--gold);
+        }
+        .ebook-name {
+            font-family: var(--ft); font-size: 1.6rem; font-weight: 700;
+            color: var(--white); line-height: 1.2; margin: .4rem 0 .6rem;
+        }
+        .ebook-desc { font-size: .84rem; color: var(--silver); line-height: 1.7; }
+
+        .btn-dl {
+            display: inline-flex; align-items: center; gap: .6rem;
+            background: var(--gold); color: var(--navy);
+            font-family: var(--fb); font-size: .78rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            padding: .85rem 1.8rem; text-decoration: none; border: none; cursor: pointer;
+            transition: background .2s, transform .15s; align-self: flex-start;
+        }
+        .btn-dl:hover { background: var(--gold-lt); transform: translateY(-1px); }
+
+        /* ── VIDEO BLOCK ── */
+        .video-block { margin-bottom: 1rem; }
+        .video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1.2rem;
+        }
+
+        .video-card {
+            background: var(--navy2); border: 1px solid rgba(255,255,255,.06);
+            overflow: hidden; transition: border-color .25s, transform .2s;
+        }
+        .video-card:hover { border-color: var(--border); transform: translateY(-3px); }
+
+        /* VIDEO WINDOW — replace inner content with iframe when ready */
+        .video-window {
+            width: 100%; aspect-ratio: 16/9;
+            background: var(--navy3); position: relative;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+
+        .video-ph {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: .8rem;
+            position: absolute; inset: 0;
+        }
+
+        .play-ring {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: rgba(201,168,76,.12); border: 1.5px solid rgba(201,168,76,.4);
+            display: flex; align-items: center; justify-content: center; color: var(--gold);
+            transition: background .2s, transform .2s;
+        }
+        .video-card:hover .play-ring { background: var(--gold); color: var(--navy); transform: scale(1.1); }
+
+        .video-pill {
+            position: absolute; top: .7rem; left: .8rem;
+            background: rgba(13,27,53,.85); border: 1px solid var(--border);
+            font-size: .58rem; font-weight: 700; letter-spacing: .15em;
+            text-transform: uppercase; color: var(--gold); padding: .2rem .5rem;
+        }
+
+        .video-meta { padding: .9rem 1.1rem 1.1rem; }
+        .video-num {
+            font-size: .62rem; font-weight: 700; letter-spacing: .15em;
+            text-transform: uppercase; color: var(--gold); margin-bottom: .28rem;
+        }
+        .video-title {
+            font-family: var(--ft); font-size: 1rem; font-weight: 600;
+            color: var(--white); line-height: 1.3; margin-bottom: .4rem;
+        }
+        .video-dur { font-size: .72rem; color: var(--silver); display: flex; align-items: center; gap: .3rem; }
+
+        /* empty slot */
+        .video-card.empty {
+            border-style: dashed; border-color: rgba(201,168,76,.15);
+            background: transparent; cursor: default;
+        }
+        .video-card.empty:hover { transform: none; border-color: rgba(201,168,76,.25); }
+        .empty-win {
+            aspect-ratio: 16/9; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: .5rem;
+            color: rgba(201,168,76,.3); font-size: .65rem; font-weight: 700;
+            letter-spacing: .12em; text-transform: uppercase; text-align: center; padding: 1rem;
+        }
+
+        /* ── SIDEBAR ── */
+        .side-card {
+            background: var(--navy2); border: 1px solid var(--border);
+            padding: 1.5rem 1.6rem; margin-bottom: 1.2rem;
+        }
+        .side-lbl {
+            font-size: .62rem; font-weight: 700; letter-spacing: .2em;
+            text-transform: uppercase; color: var(--gold);
+            padding-bottom: .9rem; margin-bottom: .9rem; border-bottom: 1px solid var(--border);
+        }
+
+        /* progress */
+        .prog-item { margin-bottom: .9rem; }
+        .prog-item:last-child { margin-bottom: 0; }
+        .prog-row { display: flex; justify-content: space-between; font-size: .78rem; margin-bottom: .35rem; color: var(--off); }
+        .prog-pct { color: var(--gold); font-weight: 700; }
+        .prog-bar { height: 3px; background: rgba(255,255,255,.07); overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg,var(--gold-dk),var(--gold-lt)); }
+
+        /* checklist */
+        .chk-row {
+            display: flex; align-items: flex-start; gap: .7rem;
+            padding: .55rem 0; border-bottom: 1px solid rgba(255,255,255,.05);
+            font-size: .8rem; color: var(--off); line-height: 1.45;
+        }
+        .chk-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .chk {
+            width: 17px; height: 17px; border-radius: 50%;
+            border: 1.5px solid rgba(201,168,76,.4);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; color: var(--gold); margin-top: .1rem;
+        }
+        .chk.done { background: rgba(201,168,76,.12); border-color: var(--gold); }
+
+        /* author */
+        .auth-row { display: flex; align-items: center; gap: .9rem; margin-bottom: .9rem; }
+        .auth-av {
+            width: 48px; height: 48px; border-radius: 50%;
+            border: 1.5px solid var(--border); background: var(--navy3);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--gold); flex-shrink: 0;
+        }
+        .auth-name { font-family: var(--ft); font-size: .95rem; font-weight: 600; color: var(--white); }
+        .auth-spec { font-size: .7rem; color: var(--silver); margin-top: .15rem; }
+        .auth-bio { font-size: .78rem; color: var(--silver); line-height: 1.65; }
+
+        /* support */
+        .sup-link {
+            display: flex; align-items: center; gap: .65rem;
+            padding: .55rem 0; border-bottom: 1px solid rgba(255,255,255,.05);
+            font-size: .8rem; color: var(--off); text-decoration: none; transition: color .2s;
+        }
+        .sup-link:last-child { border-bottom: none; padding-bottom: 0; }
+        .sup-link:hover { color: var(--gold); }
+        .sup-link svg { color: var(--gold); opacity: .7; flex-shrink: 0; }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 1.4rem clamp(1.5rem,5vw,3.5rem);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: .8rem; font-size: .72rem; color: var(--silver);
+        }
+        footer a { color: var(--silver); text-decoration: none; transition: color .2s; }
+        footer a:hover { color: var(--gold); }
+        .footer-links { display: flex; gap: 1.5rem; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 960px) {
+            .page-grid { grid-template-columns: 1fr; }
+            .main-col { border-right: none; border-bottom: 1px solid var(--border); }
+            .ebook-card { grid-template-columns: 1fr; }
+            .ebook-visual { flex-direction: row; padding: 1.5rem; border-right: none; border-bottom: 1px solid var(--border); }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 560px) {
+            .video-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            nav { padding: 0 1.1rem; height: auto; min-height: 60px; flex-wrap: wrap; gap: .6rem; padding-top: .7rem; padding-bottom: .7rem; }
+            .nav-logo { font-size: 1rem; }
+            nav > div { gap: .5rem !important; }
+            nav button { font-size: .68rem !important; padding: .4rem .7rem !important; }
+            nav button svg { width: 11px; height: 11px; }
+            .nav-badge { font-size: .6rem; padding: .28rem .65rem; }
+            .nav-badge::before { width: 5px; height: 5px; }
+
+            .hero { padding: 2rem 1.1rem 1.6rem; }
+            .hero-title { font-size: 1.7rem; }
+            .hero-sub { font-size: .82rem; }
+
+            .main-col, .side-col { padding: 1.6rem 1.1rem; }
+
+            .sec-num { font-size: 2.1rem; min-width: 2.1rem; }
+            .sec-text { font-size: 1.05rem; }
+
+            .ebook-visual { padding: 1.2rem; gap: .6rem; }
+            .ebook-visual svg { width: 40px; height: 40px; }
+            .ebook-cover-img { width: 90px; }
+            .ebook-info { padding: 1.4rem 1.3rem; gap: 1rem; }
+            .ebook-name { font-size: 1.3rem; }
+            .btn-dl { width: 100%; justify-content: center; padding: .9rem 1rem; }
+
+            .video-meta { padding: .75rem .9rem .9rem; }
+            .video-title { font-size: .92rem; }
+
+            .side-card { padding: 1.2rem 1.3rem; }
+
+            footer { flex-direction: column; align-items: flex-start; padding: 1.2rem 1.1rem; gap: .9rem; }
+            .footer-links { gap: 1.1rem; flex-wrap: wrap; }
+
+            /* drawer ocupa a tela toda no mobile */
+            .drawer { width: 100vw; }
+        }
+
+        @media (max-width: 380px) {
+            .nav-logo { font-size: .88rem; }
+            nav button span, nav button { font-size: .62rem !important; }
+            .hero-title { font-size: 1.45rem; }
+            .nav-badge span { display:none; }
+        }
+
+
+
+        /* ── DRAWER MINHA CONTA ── */
+
+
+        .drawer-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.55);
+            z-index:200; opacity:0; pointer-events:none;
+            transition:opacity 0.3s;
+        }
+        .drawer-overlay.open { opacity:1; pointer-events:all; }
+
+        .drawer {
+            position:fixed; top:0; right:0; bottom:0; width:360px; max-width:100vw;
+            background:var(--navy2); border-left:1px solid var(--border);
+            z-index:201; transform:translateX(100%);
+            transition:transform 0.35s cubic-bezier(.4,0,.2,1);
+            display:flex; flex-direction:column; overflow:hidden;
+        }
+        .drawer.open { transform:translateX(0); }
+
+        .drawer-header {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:1.4rem 1.6rem; border-bottom:1px solid var(--border);
+            flex-shrink:0;
+        }
+        .drawer-title {
+            font-family:var(--ft); font-size:1.05rem; font-weight:600; color:var(--white);
+        }
+        .drawer-close {
+            background:none; border:none; cursor:pointer; color:var(--silver);
+            padding:4px; display:flex; align-items:center; justify-content:center;
+            transition:color 0.2s;
+        }
+        .drawer-close:hover { color:var(--white); }
+
+        .drawer-body { flex:1; overflow-y:auto; padding:1.6rem; display:flex; flex-direction:column; gap:1.2rem; }
+
+        .drawer-section {
+            background:rgba(255,255,255,0.03); border:1px solid var(--border);
+            padding:1.2rem 1.4rem;
+        }
+        .drawer-section-lbl {
+            font-size:.6rem; font-weight:700; letter-spacing:.2em;
+            text-transform:uppercase; color:var(--gold);
+            padding-bottom:.8rem; margin-bottom:.8rem; border-bottom:1px solid var(--border);
+        }
+        .drawer-info-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:.4rem 0; font-size:.82rem; color:var(--off);
+            border-bottom:1px solid rgba(255,255,255,.04);
+        }
+        .drawer-info-row:last-child { border-bottom:none; }
+        .drawer-info-row span:first-child { color:var(--silver); }
+
+        .drawer-btn {
+            display:flex; align-items:center; gap:.7rem;
+            width:100%; padding:.85rem 1.1rem;
+            background:none; border:1px solid var(--border);
+            color:var(--off); font-family:var(--fb); font-size:.82rem;
+            cursor:pointer; text-decoration:none; transition:border-color .2s, color .2s;
+            margin-bottom:.5rem;
+        }
+        .drawer-btn:last-child { margin-bottom:0; }
+        .drawer-btn:hover { border-color:var(--gold); color:var(--gold); }
+        .drawer-btn svg { color:var(--gold); opacity:.8; flex-shrink:0; }
+        .drawer-btn.danger { border-color:rgba(220,60,60,.3); color:#ff7a7a; }
+        .drawer-btn.danger svg { color:#ff7a7a; }
+        .drawer-btn.danger:hover { border-color:#ff7a7a; background:rgba(220,60,60,.06); }
+
+        .drawer-msg {
+            font-size:.78rem; padding:.7rem 1rem;
+            border-radius:4px; display:none; margin-top:.5rem; line-height:1.5;
+        }
+        .drawer-msg.ok { background:rgba(46,204,113,.1); border:1px solid rgba(46,204,113,.25); color:#2ECC71; display:block; }
+        .drawer-msg.erro { background:rgba(220,60,60,.1); border:1px solid rgba(220,60,60,.25); color:#ff7a7a; display:block; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#" class="nav-logo">Dr. <span>Marco Maggi</span></a>
+    <ul class="nav-links">
+        <li><a href="#"></a></li>
+        <li><a href="#"></a></li>
+        <li><a href="#"></a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <button onclick="abrirDrawer()" style="background:none;border:1px solid var(--border);color:var(--off);font-family:var(--fb);font-size:.78rem;padding:.45rem 1rem;cursor:pointer;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:.5rem;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--off)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Minha Conta
+        </button>
+        <div class="nav-badge">Acesso liberado</div>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-eye">Área do Aluno</div>
+    <h1 class="hero-title">Harmonização <em>de Milhões</em></h1>
+    <p class="hero-sub">Bem-vindo ao seu material completo. Acesse o eBook e as videoaulas abaixo — o seu caminho para o sucesso financeiro na harmonização facial começa agora.</p>
+</div>
+
+<div class="page-grid">
+    <main class="main-col">
+
+        <!-- eBOOK -->
+        <div class="ebook-block">
+            <div class="sec-heading">
+                <div class="sec-num">01</div>
+                <div class="sec-text">Seu <span>eBook</span></div>
+            </div>
+            <div class="ebook-card">
+                <div class="ebook-visual">
+                    <img src="img/capa-ebook.jpeg" class="ebook-cover-img" alt="Capa do eBook Harmonização de Milhões">
+                    <div class="ebook-visual-lbl"> · eBook completo</div>
+                </div>
+                <div class="ebook-info">
+                    <div>
+                        <div class="ebook-tag">eBook </div>
+                        <div class="ebook-name">Harmonização<br>de Milhões</div>
+                        <div class="ebook-desc">Os 5 pilares para o sucesso financeiro na harmonização facial. Inclui guia técnico completo de toxina botulínica e preenchimento labial com ácido hialurônico.</div>
+                    </div>
+                    <a href="/private/ebook" class="btn-dl" id="btn-ebook">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        Ler eBook
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEOAULAS -->
+        <div class="video-block">
+            <div class="sec-heading">
+                <div class="sec-num">02</div>
+                <div class="sec-text"><span>Videoaulas</span></div>
+            </div>
+            <div class="video-grid">
+
+                <div class="video-card">
+                    <div class="video-window">
+                        <video controls
+                               poster="img/videoaula0.JPG"
+                               preload="none"
+                               style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;">
+                            <source src="/private/video/aula1" type="video/mp4">
+                        </video>
+                        <div class="video-pill"></div>
+                    </div>
+                    <div class="video-meta">
+                        <div class="video-num">Aula 01</div>
+                        <div class="video-title">Técnica de Toxina Botulínica (Botox)</div>
+                        <div class="video-dur"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> — min</div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-window">
+                        <video controls
+                               poster="img/videoaula01.JPG"
+                               preload="none"
+                               style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;">
+                            <source src="/private/video/aula2" type="video/mp4">
+                        </video>
+                        <div class="video-pill"></div>
+                    </div>
+                    <div class="video-meta">
+                        <div class="video-num">Aula 02</div>
+                        <div class="video-title">Técnica de Preenchimento Labial</div>
+                        <div class="video-dur"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> — min</div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-window">
+                        <video controls
+                               poster="img/instagram.JPG"
+                               preload="none"
+                               style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;">
+                            <source src="/private/video/aula3" type="video/mp4">
+                        </video>
+                        <div class="video-pill"></div>
+                    </div>
+                    <div class="video-meta">
+                        <div class="video-num">Aula 03</div>
+                        <div class="video-title">Tráfego Pago</div>
+                        <div class="video-dur"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> — min</div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+        </div>
+</div>
+
+</main>
+
+<aside class="side-col">
+
+
+    <div class="side-card">
+        <div class="side-lbl">O que está incluído</div>
+        <div class="chk-row">
+            <div class="chk done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            eBook completo — 5 pilares
+        </div>
+        <div class="chk-row">
+            <div class="chk done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            3 videoaulas
+        </div>
+        <div class="chk-row">
+            <div class="chk done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Guia técnico toxina botulínica
+        </div>
+        <div class="chk-row">
+            <div class="chk done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Protocolo preenchimento labial
+        </div>
+        <div class="chk-row">
+            <div class="chk"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            Atualizações futuras incluídas
+        </div>
+    </div>
+
+    <div class="side-card">
+        <div class="side-lbl">Sobre o autor</div>
+        <div class="auth-row">
+            <div class="auth-av">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div>
+                <div class="auth-name">Dr. Marco Maggi</div>
+                <div class="auth-spec">CRF-SC 10181 · Harmonização Facial</div>
+            </div>
+        </div>
+        <div class="auth-bio">Especialista em harmonização facial com atuação no Brasil, Portugal e União Europeia. Criador do método dos 5 pilares para o sucesso financeiro na estética.</div>
+    </div>
+
+    <div class="side-card">
+        <div class="side-lbl">Suporte</div>
+        <a href="mailto:nextawebagency8@gmail.com" class="sup-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            nextawebagency8@gmail.com
+        </a>
+        <a href="https://wa.me/+351915906432" target="_blank" class="sup-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            WhatsApp
+        </a>
+
+    </div>
+
+</aside>
+</div>
+
+<footer>
+    <span>© 2026 Dr. Marco Maggi · Todos os direitos reservados</span>
+    <div class="footer-links">
+
+
+        <a href="https://instagram.com" target="_blank">Instagram</a>
+    </div>
+
+    <!-- DRAWER MINHA CONTA -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="fecharDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Minha Conta</span>
+            <button class="drawer-close" onclick="fecharDrawer()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="drawer-body">
+
+            <div class="drawer-section">
+                <div class="drawer-section-lbl">Os meus dados</div>
+                <div class="drawer-info-row"><span>Nome</span><span id="drNome">—</span></div>
+                <div class="drawer-info-row"><span>Email</span><span id="drEmail">—</span></div>
+                <div class="drawer-info-row"><span>Acesso</span><span style="color:#2ECC71;font-weight:700;">Ativo ✓</span></div>
+            </div>
+
+            <div class="drawer-section">
+                <div class="drawer-section-lbl">Ações</div>
+                <a href="/private/ebook" class="drawer-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Ler eBook
+                </a>
+                <button class="drawer-btn" onclick="descarregarDados()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Descarregar os meus dados (RGPD)
+                </button>
+                <button class="drawer-btn" onclick="logout()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Terminar sessão
+                </button>
+            </div>
+
+            <div class="drawer-section">
+                <div class="drawer-section-lbl">Zona de perigo</div>
+                <button class="drawer-btn danger" onclick="confirmarApagar()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                    Apagar conta e dados
+                </button>
+                <div class="drawer-msg" id="drawerMsg"></div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+<script>
+    (async function verificarAcesso() {
+        try {
+            const resp = await fetch('/api/eu');
+            const dados = await resp.json();
+
+            if (!dados.logado || !dados.pagou) {
+                window.location.href = dados.logado ? '/sem-acesso' : '/login';
+                return;
+            }
+
+            if (dados.nome) {
+                const el = document.querySelector('.hero-sub');
+                if (el) {
+                    el.textContent = `Bem-vindo, ${dados.nome.split(' ')[0]}! O teu acesso está ativo.`;
+                }
+            }
+
+        } catch (err) {
+            console.error('Erro ao verificar acesso:', err);
+            window.location.href = '/login';
+        }
+    })();
+
+    // ── Drawer Minha Conta ──
+    function abrirDrawer() {
+        document.getElementById('drawer').classList.add('open');
+        document.getElementById('drawerOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharDrawer() {
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('drawerOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDrawer(); });
+
+    async function descarregarDados() {
+        try {
+            const res  = await fetch('/api/meus-dados');
+            const data = await res.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href = url; a.download = 'meus-dados.json'; a.click();
+            URL.revokeObjectURL(url);
+        } catch(e) {
+            mostrarMsgDrawer('Erro ao descarregar dados.', 'erro');
+        }
+    }
+
+    async function confirmarApagar() {
+        const ok = confirm('Tens a certeza que queres apagar a tua conta e todos os teus dados? Esta ação é irreversível.');
+        if (!ok) return;
+        try {
+            const res = await fetch('/api/conta', { method: 'DELETE' });
+            if (res.ok) {
+                mostrarMsgDrawer('Conta apagada. A redirecionar…', 'ok');
+                setTimeout(() => window.location.href = '/', 2000);
+            } else {
+                mostrarMsgDrawer('Erro ao apagar conta. Tenta novamente.', 'erro');
+            }
+        } catch(e) {
+            mostrarMsgDrawer('Erro de ligação.', 'erro');
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    }
+
+    function mostrarMsgDrawer(texto, tipo) {
+        const el = document.getElementById('drawerMsg');
+        el.textContent = texto;
+        el.className = 'drawer-msg ' + tipo;
+    }
+
+    // Preencher dados do utilizador no drawer
+    fetch('/api/eu').then(r => r.json()).then(u => {
+        if (u.logado) {
+            document.getElementById('drNome').textContent  = u.nome;
+            document.getElementById('drEmail').textContent = u.email;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+node_modules/
+.env
+.idea/
+*.db
+*.db-shm
+*.db-wal
+private/video/
+data/
+untitled/

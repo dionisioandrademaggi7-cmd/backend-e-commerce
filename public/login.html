@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar — Harmonização de Milhões</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0B1F3A; --navy-mid:#112B52; --gold:#C8993A; --gold-light:#E2BF78; --white:#FDFCFA; --text-light:#8A9AB5; --radius:8px; }
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Outfit',sans-serif; background:var(--navy); color:var(--white); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+        body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(200,153,58,0.08) 0%, transparent 60%); pointer-events:none; }
+        .card { position:relative; background:rgba(17,43,82,0.7); border:1px solid rgba(200,153,58,0.2); border-radius:16px; padding:48px 44px; width:100%; max-width:440px; backdrop-filter:blur(12px); box-shadow:0 32px 80px rgba(0,0,0,0.4); animation:fadeUp 0.5s ease both; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+        .logo { font-family:'Playfair Display',serif; font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:32px; }
+        h1 { font-family:'Playfair Display',serif; font-size:28px; font-weight:600; margin-bottom:10px; }
+        .subtitle { font-size:14px; color:var(--text-light); line-height:1.6; margin-bottom:32px; }
+        .field { margin-bottom:18px; }
+        label { display:block; font-size:12px; font-weight:500; letter-spacing:0.8px; text-transform:uppercase; color:var(--text-light); margin-bottom:8px; }
+        input { width:100%; background:rgba(11,31,58,0.6); border:1px solid rgba(200,153,58,0.2); border-radius:var(--radius); color:var(--white); font-family:'Outfit',sans-serif; font-size:15px; padding:13px 16px; outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
+        input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(200,153,58,0.12); }
+        .btn { width:100%; margin-top:8px; padding:15px; background:linear-gradient(135deg,#C8993A,#A87A20); color:var(--navy); font-family:'Outfit',sans-serif; font-size:15px; font-weight:700; border:none; border-radius:var(--radius); cursor:pointer; transition:opacity 0.2s; }
+        .btn:hover { opacity:0.9; }
+        .btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .erro { background:rgba(220,60,60,0.12); border:1px solid rgba(220,60,60,0.3); border-radius:var(--radius); color:#ff7a7a; font-size:13px; padding:12px 14px; margin-bottom:18px; display:none; }
+        .links { display:flex; justify-content:space-between; margin-top:20px; font-size:13px; color:var(--text-light); }
+        .links a { color:var(--gold); text-decoration:none; }
+        .links a:hover { text-decoration:underline; }
+        .back-link {
+            position:absolute; top:24px; right:24px;
+            display:flex; align-items:center; gap:5px;
+            font-size:12.5px; color:var(--text-light); text-decoration:none;
+            transition:color 0.2s; z-index:10;
+        }
+        .back-link:hover { color:var(--gold-light); }
+        @media (max-width:480px) {
+            .back-link { top:18px; right:18px; font-size:12px; }
+            .back-link svg { width:12px; height:12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <a href="/" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+    </a>
+    <div class="logo">Dr. Marco Maggi</div>
+    <h1>Entrar</h1>
+    <p class="subtitle">Acede ao teu conteúdo com email e senha.</p>
+    <div class="erro" id="erro"></div>
+    <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="o.teu@email.com" autocomplete="email">
+    </div>
+    <div class="field">
+        <label>Senha</label>
+        <input type="password" id="senha" placeholder="A tua senha" autocomplete="current-password">
+    </div>
+    <button class="btn" id="btn" onclick="entrar()">Entrar →</button>
+    <div class="links">
+        <a href="/registrar">Criar conta</a>
+        <a href="/recuperar">Esqueci a senha</a>
+    </div>
+</div>
+<script>
+    // Se já está logado, redireciona imediatamente
+    fetch('/api/eu').then(r => r.json()).then(u => {
+        if (u.logado) {
+            window.location.href = u.pagou ? '/produto' : '/sem-acesso';
+        }
+    }).catch(() => {});
+
+    async function entrar() {
+        const email = document.getElementById('email').value.trim();
+        const senha = document.getElementById('senha').value;
+        const erro  = document.getElementById('erro');
+        const btn   = document.getElementById('btn');
+        erro.style.display = 'none';
+
+        if (!email || !senha) {
+            erro.textContent = 'Preenche email e senha.';
+            erro.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.textContent = 'A entrar…';
+
+        try {
+            const res  = await fetch('/api/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.erro);
+
+            // Após login vai sempre buscar o estado fresco
+            window.location.href = data.pagou ? '/produto' : '/sem-acesso';
+        } catch (err) {
+            erro.textContent = err.message;
+            erro.style.display = 'block';
+            btn.disabled = false; btn.textContent = 'Entrar →';
+        }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+</script>
+</body>
+</html>

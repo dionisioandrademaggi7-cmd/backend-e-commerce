@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade — Harmonização de Milhões</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:#0B1F3A;
+            --navy-mid:#112B52;
+            --gold:#C8993A;
+            --gold-light:#E2BF78;
+            --white:#FDFCFA;
+            --text-light:#8A9AB5;
+            --radius:8px;
+        }
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+        body {
+            font-family:'Outfit',sans-serif;
+            background:var(--navy);
+            color:var(--white);
+            min-height:100vh;
+            padding:0;
+        }
+
+        body::before {
+            content:'';
+            position:fixed;
+            inset:0;
+            background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(200,153,58,0.06) 0%, transparent 60%);
+            pointer-events:none;
+            z-index:0;
+        }
+
+        /* ── Header ── */
+        header {
+            position:sticky;
+            top:0;
+            z-index:100;
+            background:rgba(11,31,58,0.92);
+            backdrop-filter:blur(12px);
+            border-bottom:1px solid rgba(200,153,58,0.12);
+            padding:18px 40px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+
+        .logo {
+            font-family:'Playfair Display',serif;
+            font-size:13px;
+            letter-spacing:2px;
+            text-transform:uppercase;
+            color:var(--gold);
+            text-decoration:none;
+        }
+
+        .back-link {
+            font-size:13px;
+            color:var(--text-light);
+            text-decoration:none;
+            display:flex;
+            align-items:center;
+            gap:6px;
+            transition:color 0.2s;
+        }
+        .back-link:hover { color:var(--gold-light); }
+
+        /* ── Layout ── */
+        main {
+            position:relative;
+            z-index:1;
+            max-width:720px;
+            margin:0 auto;
+            padding:64px 32px 96px;
+        }
+
+        /* ── Hero ── */
+        .hero-label {
+            display:inline-block;
+            font-size:11px;
+            font-weight:500;
+            letter-spacing:2px;
+            text-transform:uppercase;
+            color:var(--gold);
+            border:1px solid rgba(200,153,58,0.3);
+            border-radius:4px;
+            padding:4px 12px;
+            margin-bottom:24px;
+        }
+
+        h1 {
+            font-family:'Playfair Display',serif;
+            font-size:clamp(28px, 5vw, 40px);
+            font-weight:700;
+            line-height:1.2;
+            margin-bottom:16px;
+        }
+
+        .hero-meta {
+            font-size:13px;
+            color:var(--text-light);
+            margin-bottom:48px;
+            padding-bottom:48px;
+            border-bottom:1px solid rgba(200,153,58,0.12);
+        }
+
+        /* ── Sections ── */
+        section {
+            margin-bottom:40px;
+        }
+
+        h2 {
+            font-family:'Playfair Display',serif;
+            font-size:20px;
+            font-weight:600;
+            color:var(--gold-light);
+            margin-bottom:14px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        h2::before {
+            content:'';
+            display:inline-block;
+            width:3px;
+            height:18px;
+            background:var(--gold);
+            border-radius:2px;
+            flex-shrink:0;
+        }
+
+        p {
+            font-size:15px;
+            line-height:1.8;
+            color:rgba(253,252,250,0.75);
+            margin-bottom:12px;
+        }
+
+        ul {
+            list-style:none;
+            margin-bottom:12px;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+
+        ul li {
+            font-size:15px;
+            line-height:1.7;
+            color:rgba(253,252,250,0.75);
+            padding-left:20px;
+            position:relative;
+        }
+
+        ul li::before {
+            content:'';
+            position:absolute;
+            left:0;
+            top:10px;
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            background:var(--gold);
+            opacity:0.7;
+        }
+
+        strong {
+            color:var(--white);
+            font-weight:500;
+        }
+
+        a {
+            color:var(--gold);
+            text-decoration:none;
+        }
+        a:hover { text-decoration:underline; }
+
+        /* ── Destaque box ── */
+        .box {
+            background:rgba(200,153,58,0.06);
+            border:1px solid rgba(200,153,58,0.18);
+            border-radius:var(--radius);
+            padding:20px 24px;
+            margin-bottom:12px;
+        }
+
+        .box p { margin-bottom:0; }
+
+        /* ── Tabela de terceiros ── */
+        .terceiros {
+            width:100%;
+            border-collapse:collapse;
+            margin-bottom:12px;
+            font-size:14px;
+        }
+
+        .terceiros th {
+            text-align:left;
+            padding:10px 14px;
+            font-size:11px;
+            letter-spacing:1px;
+            text-transform:uppercase;
+            color:var(--text-light);
+            border-bottom:1px solid rgba(200,153,58,0.15);
+        }
+
+        .terceiros td {
+            padding:12px 14px;
+            color:rgba(253,252,250,0.7);
+            border-bottom:1px solid rgba(255,255,255,0.05);
+            vertical-align:top;
+        }
+
+        .terceiros tr:last-child td { border-bottom:none; }
+
+        /* ── Footer ── */
+        footer {
+            position:relative;
+            z-index:1;
+            text-align:center;
+            padding:32px;
+            border-top:1px solid rgba(200,153,58,0.1);
+            font-size:12px;
+            color:var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">Dr. Marco Maggi</a>
+    <a href="/" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+    </a>
+</header>
+
+<main>
+    <span class="hero-label">RGPD · Regulamento Geral de Proteção de Dados</span>
+    <h1>Política de Privacidade</h1>
+    <p class="hero-meta">Última atualização: Junho de 2026 &nbsp;·&nbsp; Dr. Marco Maggi &nbsp;·&nbsp; Portugal</p>
+
+    <section>
+        <h2>Quem somos</h2>
+        <p>O responsável pelo tratamento dos teus dados pessoais é <strong>Dr. Marco Maggi</strong>, com sede em Portugal. Para qualquer questão relacionada com a tua privacidade, podes contactar-nos através do email <a href="mailto:recebimentodrmarco@gmail.com">recebimentodrmarco@gmail.com</a>.</p>
+    </section>
+
+    <section>
+        <h2>Que dados recolhemos</h2>
+        <p>Ao criares conta e adquirires o nosso conteúdo, recolhemos os seguintes dados:</p>
+        <ul>
+            <li><strong>Nome completo</strong> — para personalizar a tua experiência</li>
+            <li><strong>Endereço de email</strong> — para autenticação e comunicações relacionadas com a tua conta</li>
+            <li><strong>Senha</strong> — armazenada de forma encriptada (bcrypt), nunca em texto simples</li>
+            <li><strong>Dados de pagamento</strong> — processados exclusivamente pela Stripe; não guardamos números de cartão</li>
+            <li><strong>Data de criação da conta e registos de acesso</strong> — para segurança e auditoria</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Para que utilizamos os teus dados</h2>
+        <ul>
+            <li>Criar e gerir a tua conta de acesso</li>
+            <li>Verificar o pagamento e ativar o acesso ao conteúdo adquirido</li>
+            <li>Enviar comunicações relacionadas com a tua conta (recuperação de senha, confirmações)</li>
+            <li>Garantir a segurança da plataforma e prevenir acessos não autorizados</li>
+        </ul>
+        <div class="box">
+            <p>Não vendemos, alugamos nem partilhamos os teus dados com terceiros para fins de marketing. Nunca.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Com quem partilhamos os teus dados</h2>
+        <p>Os teus dados são partilhados apenas com os seguintes prestadores de serviço, estritamente necessários para o funcionamento da plataforma:</p>
+        <table class="terceiros">
+            <thead>
+            <tr>
+                <th>Prestador</th>
+                <th>Finalidade</th>
+                <th>Política</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Stripe</strong></td>
+                <td>Processamento de pagamentos</td>
+                <td><a href="https://stripe.com/pt-pt/privacy" target="_blank">stripe.com/privacy</a></td>
+            </tr>
+            <tr>
+                <td><strong>Google (Gmail)</strong></td>
+                <td>Envio de emails transacionais</td>
+                <td><a href="https://policies.google.com/privacy" target="_blank">policies.google.com</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Durante quanto tempo guardamos os teus dados</h2>
+        <ul>
+            <li><strong>Dados de conta</strong> — enquanto a tua conta estiver ativa ou até pedires a eliminação</li>
+            <li><strong>Registos de acesso e segurança</strong> — máximo de 90 dias</li>
+            <li><strong>Dados de pagamento</strong> — conforme as obrigações legais aplicáveis (faturação)</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Os teus direitos</h2>
+        <p>Ao abrigo do RGPD, tens os seguintes direitos sobre os teus dados:</p>
+        <ul>
+            <li><strong>Acesso</strong> — podes solicitar uma cópia de todos os dados que temos sobre ti</li>
+            <li><strong>Retificação</strong> — podes corrigir dados incorretos ou incompletos</li>
+            <li><strong>Apagamento</strong> — podes pedir a eliminação completa da tua conta e dados</li>
+            <li><strong>Portabilidade</strong> — podes receber os teus dados num formato legível por máquina</li>
+            <li><strong>Oposição</strong> — podes opor-te ao tratamento dos teus dados em determinadas circunstâncias</li>
+        </ul>
+        <p>Para exercer qualquer um destes direitos, contacta-nos em <a href="mailto:recebimentodrmarco@gmail.com">recebimentodrmarco@gmail.com</a>. Respondemos no prazo máximo de 30 dias.</p>
+    </section>
+
+    <section>
+        <h2>Cookies e sessões</h2>
+        <p>Utilizamos um cookie de sessão (<code style="background:rgba(200,153,58,0.1);padding:2px 6px;border-radius:4px;font-size:13px;">sessao</code>) estritamente necessário para manteres a tua sessão ativa após o login. Este cookie não é utilizado para rastreamento ou publicidade, não partilha informação com terceiros e expira ao fim de 30 dias ou quando fazeres logout.</p>
+        <p>Não utilizamos cookies de terceiros, Google Analytics, pixels de rastreamento ou qualquer outra tecnologia de rastreamento.</p>
+    </section>
+
+    <section>
+        <h2>Segurança</h2>
+        <p>Adotamos medidas técnicas para proteger os teus dados, incluindo encriptação de senhas, comunicações HTTPS, proteção contra ataques de força bruta e acesso restrito aos dados de produção.</p>
+    </section>
+
+    <section>
+        <h2>Reclamações</h2>
+        <p>Se considerares que o tratamento dos teus dados viola o RGPD, tens o direito de apresentar uma reclamação à autoridade de controlo portuguesa: <a href="https://www.cnpd.pt" target="_blank">Comissão Nacional de Proteção de Dados (CNPD)</a>.</p>
+    </section>
+</main>
+
+<footer>
+    © 2026 Dr. Marco Maggi · <a href="/">Harmonização de Milhões</a> · Portugal
+</footer>
+
+</body>
+</html>

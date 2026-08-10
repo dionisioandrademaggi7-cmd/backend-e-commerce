@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta Criada — Harmonização de Milhões</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0B1F3A; --navy-mid:#112B52; --gold:#C8993A; --gold-light:#E2BF78; --white:#FDFCFA; --text-light:#8A9AB5; --radius:8px; }
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Outfit',sans-serif; background:var(--navy); color:var(--white); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+        body::before {
+            content:''; position:fixed; inset:0;
+            background:
+                    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(200,153,58,0.08) 0%, transparent 60%),
+                    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(26,58,107,0.6) 0%, transparent 60%);
+            pointer-events:none;
+        }
+        .card {
+            position:relative; background:rgba(17,43,82,0.7);
+            border:1px solid rgba(200,153,58,0.2); border-radius:16px;
+            padding:56px 48px; width:100%; max-width:520px;
+            backdrop-filter:blur(12px); box-shadow:0 32px 80px rgba(0,0,0,0.4);
+            animation:fadeUp 0.5s ease both; text-align:center;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+
+        .check-circle {
+            width:72px; height:72px;
+            background:rgba(200,153,58,0.1);
+            border:2px solid rgba(200,153,58,0.3);
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 32px;
+            animation: popIn 0.5s 0.3s ease both;
+        }
+        @keyframes popIn { from{opacity:0;transform:scale(0.6);} to{opacity:1;transform:scale(1);} }
+
+        .logo { font-family:'Playfair Display',serif; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
+
+        h1 { font-family:'Playfair Display',serif; font-size:32px; font-weight:700; line-height:1.2; margin-bottom:12px; }
+        h1 em { font-style:italic; color:var(--gold-light); }
+
+        .nome { font-size:18px; color:var(--gold-light); font-weight:500; margin-bottom:20px; }
+
+        p { font-size:15px; color:var(--text-light); line-height:1.7; margin-bottom:36px; }
+
+        .btn-comprar {
+            display:inline-block; width:100%; padding:17px 24px;
+            background:linear-gradient(135deg,#C8993A,#A87A20);
+            color:var(--navy); font-family:'Outfit',sans-serif;
+            font-size:16px; font-weight:700; letter-spacing:0.3px;
+            border:none; border-radius:var(--radius); cursor:pointer;
+            transition:filter 0.2s, transform 0.15s;
+            box-shadow:0 8px 32px rgba(200,153,58,0.3);
+        }
+        .btn-comprar:hover { filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 14px 40px rgba(200,153,58,0.4); }
+        .btn-comprar:active { transform:translateY(0); }
+        .btn-comprar:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+        .btn-home {
+            display:inline-block;
+            width:100%;
+            margin-top:12px;
+            padding:15px 24px;
+            border:1px solid rgba(200,153,58,0.35);
+            border-radius:var(--radius);
+            color:var(--gold-light);
+            font-family:'Outfit',sans-serif;
+            font-size:15px;
+            font-weight:600;
+            text-decoration:none;
+            transition:background 0.2s, transform 0.15s;
+        }
+
+        .btn-home:hover {
+            background:rgba(200,153,58,0.08);
+            transform:translateY(-1px);
+        }
+
+
+
+
+        .garantia {
+            display:flex; align-items:center; justify-content:center;
+            gap:8px; margin-top:16px;
+            font-size:12px; color:rgba(253,252,250,0.35);
+        }
+        .garantia svg { width:13px; height:13px; stroke:var(--gold); fill:none; flex-shrink:0; }
+
+        .divider { width:48px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:32px auto; }
+
+        .price-row { display:flex; align-items:baseline; justify-content:center; gap:12px; margin-bottom:24px; }
+        .price-old { font-size:15px; color:rgba(253,252,250,0.3); text-decoration:line-through; }
+        .price-new { font-family:'Playfair Display',serif; font-size:42px; font-weight:700; color:var(--gold-light); line-height:1; }
+        .price-new sup { font-size:18px; vertical-align:super; }
+
+        .includes { list-style:none; text-align:left; margin-bottom:28px; display:flex; flex-direction:column; gap:10px; }
+        .includes li { display:flex; align-items:center; gap:10px; font-size:14px; color:rgba(253,252,250,0.7); }
+        .includes li::before { content:''; flex-shrink:0; width:16px; height:16px; border-radius:50%; background:var(--gold); }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="check-circle">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8993A" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+    </div>
+
+    <div class="logo">Dr. Marco Maggi</div>
+    <h1>Conta criada<br><em>com sucesso!</em></h1>
+    <p class="nome" id="nomeUser"></p>
+    <p>A tua conta está pronta. Adquire agora o acesso ao eBook e videoaulas e começa a transformação imediatamente.</p>
+
+    <div class="price-row">
+        <span class="price-old">€ 337</span>
+        <span class="price-new"><sup>€</sup>297</span>
+    </div>
+
+    <ul class="includes">
+        <li>eBook completo — Harmonização de Milhões</li>
+        <li>Videoaulas exclusivas do Dr. Marco Maggi</li>
+        <li>Acesso vitalício ao conteúdo</li>
+        <li>Garantia de 7 dias</li>
+    </ul>
+
+    <button class="btn-comprar" id="btnComprar" onclick="comprar()">
+        Adquirir acesso agora →
+    </button>
+
+
+    <a href="/" class="btn-home">Voltar para a página inicial</a>
+
+
+    <div class="garantia">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+        Pagamento 100% seguro via Stripe
+    </div>
+</div>
+
+<script>
+    // Mostrar nome do utilizador
+    fetch('/api/eu').then(r => r.json()).then(u => {
+        if (u.logado && u.nome) {
+            const el = document.getElementById('nomeUser');
+            el.textContent = 'Olá, ' + u.nome.split(' ')[0] + '! 👋';
+        }
+    }).catch(() => {});
+
+    async function comprar() {
+        const btn = document.getElementById('btnComprar');
+        btn.disabled = true;
+        btn.textContent = 'A redirecionar…';
+        try {
+            const res  = await fetch('/api/checkout', { method: 'POST' });
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error(data.erro || 'Erro ao iniciar pagamento');
+            }
+        } catch(e) {
+            btn.disabled = false;
+            btn.textContent = 'Adquirir acesso agora →';
+            alert(e.message);
+        }
+        if (new URLSearchParams(location.search).get('processando')) {
+            const p = document.querySelector('p');
+            p.innerHTML = 'O teu pagamento está a ser processado. <strong style="color:var(--white)">Aguarda alguns segundos</strong> e recarrega a página — o acesso será ativado automaticamente.';
+        }
+    }
+</script>
+</body>
+</html>
