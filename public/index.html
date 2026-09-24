@@ -690,9 +690,58 @@
         .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
 
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 9px 10px;
+            flex-shrink: 0;
+        }
+        .nav-toggle span {
+            display: block;
+            height: 2px;
+            background: var(--gold-light);
+            border-radius: 1px;
+        }
+        .btn-sair {
+            background: none;
+            border: 1px solid rgba(255,122,122,0.45);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #ff9a9a;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-sair:hover { background: rgba(220,60,60,0.12); color: #ff7a7a; }
+
         @media (max-width: 960px) {
-            nav { padding: 0 24px; gap: 16px; }
-            .nav-links { display: none; }
+            nav { padding: 0 24px; gap: 12px; position: relative; }
+            .nav-toggle { display: flex; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 68px; left: 0; right: 0;
+                flex-direction: column;
+                gap: 0;
+                margin: 0;
+                background: var(--navy);
+                border-bottom: 1px solid rgba(200,153,58,0.2);
+                padding: 8px 24px 16px;
+                z-index: 120;
+            }
+            .nav-links a { padding: 12px 0; font-size: 15px; }
+            header.nav-open .nav-links { display: flex; }
             .hero-inner { grid-template-columns: 1fr; gap: 48px; padding: 60px 24px; }
             .hero-left { order: 2; }
             .hero-right { order: 1; }
@@ -713,12 +762,12 @@
             .price-block .price-current { font-size: 40px; }
             .footer-inner { flex-direction: column; align-items: flex-start; }
 
-            /* ── nav-actions: impede botões de estourarem ou sumirem ── */
             .nav-actions {
                 gap: 8px;
                 flex-wrap: nowrap;
                 min-width: 0;
             }
+            .btn-sair { padding: 7px 10px !important; font-size: 11.5px !important; }
             .nav-actions span,
             .nav-actions a,
             .nav-actions button {
@@ -757,6 +806,25 @@
         </div>
         <button class="presencial-banner-close" onclick="document.getElementById('presencialBanner').style.display='none'" aria-label="Fechar aviso">&times;</button>
     </div>
+
+
+    <nav>
+        <a href="/" class="logo">Dr. <span>Marco Maggi</span></a>
+        <div class="nav-links" id="navLinks">
+            <a href="#conteudo">Conteúdo</a>
+            <a href="#sobre">O autor</a>
+            <a href="#comprar">Comprar</a>
+            <a href="#contato">Contato</a>
+        </div>
+        <div class="nav-actions" id="navActions">
+            <a href="/login">Entrar</a>
+            <a href="/registrar">Criar conta</a>
+        </div>
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+</header>
 
     <section id="hero">
         <div class="hero-bg-lines"></div>
@@ -997,7 +1065,7 @@
                                 ? '<a href="/produto" style="display:flex;align-items:center;background:rgba(200,153,58,0.12);border:1px solid rgba(200,153,58,0.35);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:500;color:#E2BF78;text-decoration:none;">Meu acesso →</a>'
                                 : '<button onclick="comprar()" style="background:linear-gradient(135deg,#C8993A,#A87A20);color:#0B1F3A;font-weight:700;font-size:13px;padding:9px 18px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;">Comprar agora</button>'
                         ) +
-                        '<button onclick="logout()" style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px 14px;font-size:12px;color:rgba(253,252,250,0.4);cursor:pointer;font-family:inherit;">Sair</button>';
+                        '<button class="btn-sair" type="button" onclick="logout()">Sair</button>';
                 } else {
                     nav.innerHTML =
                         '<a href="/login" style="font-size:13px;font-weight:500;color:rgba(253,252,250,0.65);text-decoration:none;padding:8px 4px;">Entrar</a>' +
@@ -1026,13 +1094,30 @@
         }
 
         async function logout() {
-            await fetch('/api/logout', { method: 'POST' });
-            location.reload();
+            await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+            window.location.href = '/';
         }
+
+        (function () {
+            const toggle = document.getElementById('navToggle');
+            const header = document.querySelector('header');
+            if (!toggle || !header) return;
+            toggle.addEventListener('click', () => {
+                const open = header.classList.toggle('nav-open');
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+            });
+            header.querySelectorAll('.nav-links a').forEach(a => {
+                a.addEventListener('click', () => {
+                    header.classList.remove('nav-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+        })();
     </script>
     <a href="https://wa.me/351915906432?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20o%20eBook" class="whatsapp-fab" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
         <svg viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.44 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.19 0 4.25.85 5.8 2.4a8.2 8.2 0 0 1 2.4 5.83c0 4.55-3.7 8.25-8.24 8.25a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.55 3.7-8.24 8.27-8.24zm-4.52 4.7c-.15 0-.4.06-.6.28-.2.23-.79.77-.79 1.87s.81 2.17.92 2.32c.11.15 1.58 2.5 3.9 3.44 1.93.78 2.33.63 2.75.59.42-.04 1.35-.55 1.54-1.08.19-.53.19-.98.13-1.08-.06-.1-.21-.16-.44-.28-.23-.11-1.35-.67-1.56-.74-.21-.08-.36-.11-.51.11-.15.23-.58.74-.71.9-.13.15-.26.17-.49.06-.23-.11-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.1.23-.26.35-.4.11-.13.15-.23.23-.38.08-.15.04-.29-.02-.4-.06-.11-.51-1.24-.71-1.7-.19-.45-.38-.39-.51-.4h-.44z"/></svg>
     </a>
 
-</header></body>
+</body>
 </html>

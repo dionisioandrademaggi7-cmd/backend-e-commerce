@@ -131,6 +131,7 @@
 
 
     <a href="/" class="btn-home">Voltar para a página inicial</a>
+    <button type="button" class="btn-home" onclick="logout()" style="margin-top:8px;background:none;cursor:pointer;">Sair da conta</button>
 
 
     <div class="garantia">
@@ -169,6 +170,11 @@
             const p = document.querySelector('p');
             p.innerHTML = 'O teu pagamento está a ser processado. <strong style="color:var(--white)">Aguarda alguns segundos</strong> e recarrega a página — o acesso será ativado automaticamente.';
         }
+    }
+
+    async function logout() {
+        await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+        window.location.href = '/';
     }
 </script>
 </body>

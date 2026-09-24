@@ -1,0 +1,22 @@
+node_modules/
+.env
+.idea/
+untitled/
+
+# bases locais
+*.db
+*.db-shm
+*.db-wal
+data/*.db
+data/*.db-*
+
+# secrets / lixo de teste
+body.json
+login.json
+reg.json
+cookies.txt
+*.txt
+!requirements.txt
+
+# media pesada (fica só na máquina / servidor)
+private/video/

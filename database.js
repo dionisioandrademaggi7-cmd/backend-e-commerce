@@ -52,6 +52,27 @@ db.exec(`
     atualizado_em TEXT DEFAULT (datetime('now')),
     PRIMARY KEY (chave, tipo)
   );
+
+  CREATE TABLE IF NOT EXISTS products (
+                                          id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                                          slug            TEXT    UNIQUE NOT NULL,
+                                          nome            TEXT    NOT NULL,
+                                          descricao       TEXT,
+                                          stripe_price_id TEXT,
+                                          ativo           INTEGER DEFAULT 1,
+                                          criado_em       TEXT    DEFAULT (datetime('now'))
+      );
+
+  CREATE TABLE IF NOT EXISTS purchases (
+                                           id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                                           user_id         INTEGER NOT NULL,
+                                           product_id      INTEGER NOT NULL,
+                                           stripe_id       TEXT,
+                                           criado_em       TEXT    DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (product_id) REFERENCES products(id),
+      UNIQUE (user_id, product_id)
+      );
 `);
 
 const stmts = {
@@ -171,6 +192,42 @@ const stmts = {
 
     apagarUser: db.prepare(`
         DELETE FROM users WHERE id = ?
+    `),
+
+    // ── Products / Purchases ─────────────────────────────────
+    listarProducts: db.prepare(`
+        SELECT id, slug, nome, descricao, stripe_price_id, ativo
+        FROM products
+        WHERE ativo = 1
+        ORDER BY id
+    `),
+
+    buscarProductPorSlug: db.prepare(`
+        SELECT * FROM products WHERE slug = ? AND ativo = 1
+    `),
+
+    buscarProductPorId: db.prepare(`
+        SELECT * FROM products WHERE id = ?
+    `),
+
+    registarPurchase: db.prepare(`
+        INSERT OR IGNORE INTO purchases (user_id, product_id, stripe_id)
+        VALUES (@user_id, @product_id, @stripe_id)
+    `),
+
+    userTemProduto: db.prepare(`
+        SELECT 1 AS ok
+        FROM purchases
+        WHERE user_id = ? AND product_id = ?
+        LIMIT 1
+    `),
+
+    listarPurchasesDoUser: db.prepare(`
+        SELECT p.id, p.slug, p.nome, p.descricao, pu.criado_em AS comprado_em
+        FROM purchases pu
+        JOIN products p ON p.id = pu.product_id
+        WHERE pu.user_id = ?
+        ORDER BY pu.criado_em DESC
     `),
 
 };

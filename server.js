@@ -198,6 +198,48 @@ function auth(req, res, next) {
     next();
 }
 
+function requireProduct(slug) {
+    return function (req, res, next) {
+        const r = validarSessao(req.cookies?.sessao);
+        if (!r.valido) {
+            if (req.path.startsWith('/api/')) {
+                return res.status(401).json({ erro: 'Não autenticado' });
+            }
+            return res.redirect('/login');
+        }
+
+        const user = stmts.buscarUserPorEmail.get(r.sessao.email);
+        if (!user) {
+            if (req.path.startsWith('/api/')) {
+                return res.status(401).json({ erro: 'Não autenticado' });
+            }
+            return res.redirect('/login');
+        }
+
+        const product = stmts.buscarProductPorSlug.get(slug);
+        if (!product) {
+            if (req.path.startsWith('/api/')) {
+                return res.status(404).json({ erro: 'Produto não encontrado' });
+            }
+            return res.redirect('/');
+        }
+
+        const tem = stmts.userTemProduto.get(user.id, product.id);
+        const legadoOk = user.pagou && product.slug === 'harmonizacao-milhoes';
+
+        if (!tem && !legadoOk) {
+            if (req.path.startsWith('/api/')) {
+                return res.status(403).json({ erro: 'Sem acesso a este curso' });
+            }
+            return res.redirect('/sem-acesso');
+        }
+
+        req.user = user;
+        req.product = product;
+        next();
+    };
+}
+
 function authPago(req, res, next) {
     const r = validarSessao(req.cookies?.sessao);
     if (!r.valido) return res.redirect('/login');
@@ -215,6 +257,21 @@ function noStore(req, res, next) {
 }
 
 // ── Páginas públicas ──────────────────────────────────────────
+
+app.get('/curso/:slug', (req, res, next) => {
+    requireProduct(req.params.slug)(req, res, next);
+}, noStore, (req, res) => {
+    // Por agora só prova o acesso; depois serves HTML por slug
+    res.json({
+        ok: true,
+        curso: req.product.slug,
+        nome: req.product.nome,
+        user: req.user.email,
+    });
+});
+
+
+
 app.use((req, res, next) => {
     if (req.path.length > 1 && req.path.endsWith('/')) {
         const query = req.url.slice(req.path.length);
@@ -223,6 +280,7 @@ app.use((req, res, next) => {
 
     next();
 });
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/registrar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'registrar.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
@@ -261,10 +319,30 @@ app.get('/pagamento-confirmado', async (req, res) => {
             const pertenceAoUser = donoSessao && donoSessao.toLowerCase() === email.toLowerCase();
 
             if (checkoutSession.payment_status === 'paid' && pertenceAoUser) {
-                stmts.ativarAcesso.run({ email, stripe_id: sessionId });
-                stmts.log.run('acesso_ativado', email);
-                console.log(` Acesso ativado via redirect: ${email}`);
 
+                console.log(` Acesso ativado via redirect: ${email}`);
+                stmts.ativarAcesso.run({ email, stripe_id: sessionId });
+
+                const userRow = stmts.buscarUserPorEmail.get(email);
+                const productId = Number(checkoutSession.metadata?.product_id);
+                if (userRow && productId) {
+                    stmts.registarPurchase.run({
+                        user_id: userRow.id,
+                        product_id: productId,
+                        stripe_id: sessionId,
+                    });
+                } else if (userRow) {
+                    const legacy = stmts.buscarProductPorSlug.get('harmonizacao-milhoes');
+                    if (legacy) {
+                        stmts.registarPurchase.run({
+                            user_id: userRow.id,
+                            product_id: legacy.id,
+                            stripe_id: sessionId,
+                        });
+                    }
+                }
+
+                stmts.log.run('acesso_ativado', email);
                 // Email de boas-vindas em background
                 const user = stmts.buscarUserPorEmail.get(email);
                 const nomeProprio = user?.nome?.split(' ')[0] || 'Doutor(a)';
@@ -337,13 +415,58 @@ app.post('/api/registrar', limiterRegisto, async (req, res) => {
         secure:   process.env.NODE_ENV === 'production',
         maxAge:   COOKIE_MS,
         sameSite: 'lax',
+        path:     '/',
     });
 
     stmts.log.run('user_criado', email);
     res.json({ ok: true, pagou: user.pagou });
 });
 
+// ── API — Catálogo de produtos ─────────────────────────────
+app.get('/api/products', (req, res) => {
+    try {
+        const products = stmts.listarProducts.all();
+        res.json({ products });
+    } catch (err) {
+        console.error('Erro /api/products:', err.message);
+        res.status(500).json({ erro: 'Não foi possível listar os produtos.' });
+    }
+});
 
+
+// ── API — Cursos do utilizador autenticado ─────────────────
+app.get('/api/meus-cursos', auth, (req, res) => {
+    try {
+        const user = stmts.buscarUserPorEmail.get(req.user.email);
+        if (!user) {
+            return res.status(401).json({ erro: 'Não autenticado' });
+        }
+
+        const cursos = stmts.listarPurchasesDoUser.all(user.id);
+
+        // Compatibilidade: se pagou o legado e ainda não há purchase
+        if ((!cursos || cursos.length === 0) && user.pagou) {
+            const legacy = stmts.buscarProductPorSlug.get('harmonizacao-milhoes');
+            if (legacy) {
+                return res.json({
+                    cursos: [{
+                        id: legacy.id,
+                        slug: legacy.slug,
+                        nome: legacy.nome,
+                        descricao: legacy.descricao,
+                        comprado_em: null,
+                        legado: true,
+                    }],
+                });
+            }
+        }
+
+        res.json({ cursos });
+    } catch (err) {
+        console.error('Erro /api/meus-cursos:', err.message);
+        res.status(500).json({ erro: 'Não foi possível listar os cursos.' });
+    }
+});
 // ══════════════════════════════════════════════════════════════
 // API — Login (com proteção contra força bruta)
 // ══════════════════════════════════════════════════════════════
@@ -428,6 +551,7 @@ app.post('/api/login', async (req, res) => {
         secure:   process.env.NODE_ENV === 'production',
         maxAge:   COOKIE_MS,
         sameSite: 'lax',
+        path:     '/',
     });
 
     stmts.log.run('login_ok', email);
@@ -441,7 +565,12 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/logout', (req, res) => {
     const token = req.cookies?.sessao;
     if (token) stmts.eliminarSessao.run(token);
-    res.clearCookie('sessao');
+    res.clearCookie('sessao', {
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path:     '/',
+    });
     res.json({ ok: true });
 });
 
@@ -566,24 +695,40 @@ app.post('/api/nova-senha', async (req, res) => {
 // ══════════════════════════════════════════════════════════════
 // API — Checkout Stripe
 // ══════════════════════════════════════════════════════════════
-app.post('/api/checkout',limiterCheckout, auth, async (req, res) => {
+app.post('/api/checkout', limiterCheckout, auth, async (req, res) => {
     try {
+        const slug = (req.body?.slug || 'harmonizacao-milhoes').trim();
+        const product = stmts.buscarProductPorSlug.get(slug);
+
+        if (!product) {
+            return res.status(404).json({ erro: 'Produto não encontrado.' });
+        }
+
+        const priceId = product.stripe_price_id || process.env.STRIPE_PRICE_ID;
+        if (!priceId) {
+            return res.status(500).json({ erro: 'Preço Stripe não configurado para este produto.' });
+        }
+
         const session = await stripe.checkout.sessions.create({
             mode: 'payment',
-            line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+            line_items: [{ price: priceId, quantity: 1 }],
             success_url: `${BASE_URL}/pagamento-confirmado?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url:  `${BASE_URL}/sem-acesso`,
             customer_email: req.user.email,
-            metadata: { user_email: req.user.email },
+            metadata: {
+                user_email: req.user.email,
+                product_id: String(product.id),
+                product_slug: product.slug,
+            },
         });
-        stmts.log.run('checkout_criado', req.user.email);
-        res.json({ url: session.url });
+
+        stmts.log.run('checkout_criado', `${req.user.email}:${product.slug}`);
+        res.json({ url: session.url, product: product.slug });
     } catch (err) {
         console.error('Erro checkout:', err.message);
         res.status(500).json({ erro: 'Não foi possível iniciar o pagamento.' });
     }
 });
-
 // ══════════════════════════════════════════════════════════════
 // API — RGPD: Apagar conta
 // ══════════════════════════════════════════════════════════════
@@ -602,6 +747,7 @@ app.delete('/api/conta', auth, (req, res) => {
             httpOnly: true,
             secure:   process.env.NODE_ENV === 'production',
             sameSite: 'lax',
+            path:     '/',
         });
 
         res.json({ ok: true });
@@ -646,6 +792,26 @@ async function webhookHandler(req, res) {
         const stripeId = evento.data.object.id;
         if (email) {
             stmts.ativarAcesso.run({ email, stripe_id: stripeId });
+
+            const userRow = stmts.buscarUserPorEmail.get(email);
+            const productId = Number(evento.data.object.metadata?.product_id);
+            if (userRow && productId) {
+                stmts.registarPurchase.run({
+                    user_id: userRow.id,
+                    product_id: productId,
+                    stripe_id: stripeId,
+                });
+            } else if (userRow) {
+                const legacy = stmts.buscarProductPorSlug.get('harmonizacao-milhoes');
+                if (legacy) {
+                    stmts.registarPurchase.run({
+                        user_id: userRow.id,
+                        product_id: legacy.id,
+                        stripe_id: stripeId,
+                    });
+                }
+            }
+
             stmts.log.run('acesso_ativado', email);
             console.log(`✅ Acesso ativado via webhook: ${email}`);
 
